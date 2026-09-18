@@ -27,3 +27,15 @@ export function requireUserAuth(req, res, next) {
   req.user = user;
   next();
 }
+
+// Falls back to a fixed dev token outside production so local admin
+// testing needs no setup; in production a real ADMIN_TOKEN must be set
+// (via the host's env vars) or every admin request is refused.
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || (process.env.NODE_ENV === "production" ? null : "dev-admin-token");
+
+export function requireAdminAuth(req, res, next) {
+  if (!ADMIN_TOKEN) return res.status(501).json({ error: "Admin endpoints are disabled: ADMIN_TOKEN is not configured on this server" });
+  const token = bearer(req);
+  if (!token || token !== ADMIN_TOKEN) return res.status(401).json({ error: "Missing or invalid admin token" });
+  next();
+}

@@ -2,12 +2,16 @@ import express from "express";
 import cors from "cors";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { db } from "./db.js";
 import aiRouter from "./routes/ai.js";
 import authRouter from "./routes/auth.js";
 import postsRouter from "./routes/posts.js";
+import adminRouter from "./routes/admin.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENT_DIST = path.join(__dirname, "..", "client", "dist");
+
+await db.init();
 
 const app = express();
 app.use(cors());
@@ -18,6 +22,7 @@ app.get("/api/health", (_req, res) => res.json({ ok: true, name: "aioverflow-api
 app.use("/api/ai", aiRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/posts", postsRouter);
+app.use("/api/admin", adminRouter);
 
 // Serve the built React app (run `npm run build` in ../client first) and
 // fall back to index.html for client-side routes.
