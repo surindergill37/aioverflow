@@ -7,7 +7,7 @@ services:
     name: aioverflow
     runtime: node
     plan: free
-    buildCommand: "cd client && npm install && npm run build && cd ../server && npm install"
+    buildCommand: "cd client && npm install --include=dev && npm run build && cd ../server && npm install"
     startCommand: "cd server && npm start"
     healthCheckPath: /api/health
     envVars:
@@ -17,5 +17,3 @@ services:
           property: connectionString
       - key: ADMIN_TOKEN
         generateValue: true
-      - key: NODE_ENV
-        value: production
